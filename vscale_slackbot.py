@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import logging
+import re
+
 import requests
 
 from slackbot.bot import Bot
 from slackbot.bot import respond_to
-from slackbot.bot import listen_to
-import re
 
 from slackbot_settings import VSCALE_TOKEN
 
@@ -25,12 +26,28 @@ def get_rplans():
     }
 
 
-@respond_to(u'планы')
+@respond_to(u'покажи планы')
 def rplans(message):
     message.reply(u'Доступные размеры машин:\n{}'.format('\n'.join(
         '- {id} ({cpus}xCPU, {memory}Mb RAM, )'.format(**i)
-        for i in requests.get('https://api.vscale.io/v1/rplans').json()
+        for i in requests.get(
+            'https://api.vscale.io/v1/rplans',
+            headers={'X-Token': VSCALE_TOKEN},
+        ).json()
     )))
+
+
+@respond_to(u'покажи сервера')
+def scalets(message):
+    message.reply(u'Список серверов:\n{}'.format(
+        '\n'.join([
+            '- #{ctid} {name} - {public_address[address]} {rplan}'.format(**i)
+            for i in requests.get(
+                'https://api.vscale.io/v1/scalets',
+                headers={'X-Token': VSCALE_TOKEN},
+            ).json()
+        ])
+    ))
 
 
 @respond_to(u'создай ([^ ]+)( [^ ]+)', re.IGNORECASE)
@@ -55,7 +72,7 @@ def create(message, image, rplan):
         headers={'X-Token': VSCALE_TOKEN},
     ),
     message.reply((u'Машина {name} (#{ctid}) создана, адрес: '
-                   u'{public_address.address}').format(**info))
+                   u'{public_address[address]}').format(**info))
 
 
 @respond_to(u'запусти ([^ ]+)', re.IGNORECASE)
@@ -81,7 +98,7 @@ def run(message, name):
     message.reply(u'Машина #{ctid} запущена'.format(**resp))
 
 
-@listen_to(u'останови ([^ ]+)', re.IGNORECASE)
+@respond_to(u'останови ([^ ]+)', re.IGNORECASE)
 def stop(message, name):
 
     scalets = requests.get(
@@ -110,4 +127,5 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     main()

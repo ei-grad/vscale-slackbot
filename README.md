@@ -9,7 +9,9 @@
 Установка
 ---------
 
+```bash
 pip install git+https://github.com/ei-grad/vscale-slackbot.git
+```
 
 Настройка
 ---------
@@ -25,5 +27,5 @@ VSCALE_TOKEN = "<your-vscale-token>"
 ------
 
 ```bash
-./vscale.py
+vscale-slackbot
 ```

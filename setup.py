@@ -9,7 +9,7 @@ setup(
     author='Andrew Grigorev',
     author_email='andrew@ei-grad.ru',
     url='https://github.com/ei-grad/vscale-slackbot',
-    py_modules=['vscale_slackbot.py'],
+    py_modules=['vscale_slackbot'],
     entry_points={
         'console_scripts': ['vscale-slackbot=vscale_slackbot:main'],
     }

@@ -12,5 +12,9 @@ setup(
     py_modules=['vscale_slackbot'],
     entry_points={
         'console_scripts': ['vscale-slackbot=vscale_slackbot:main'],
-    }
+    },
+    install_requires=[
+        'slackbot',
+        'requests',
+    ],
 )
